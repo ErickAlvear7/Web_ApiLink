@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -52,4 +53,40 @@ public class Functions
 
     }
 
+
+    public string GetIdContract(string url,string auth)
+    {
+        try
+        {
+
+            HttpClient _contract = new HttpClient();
+            {
+                _contract.BaseAddress = new Uri(url);
+                _contract.DefaultRequestHeaders.Add("Authorization","Bearer " + auth);
+            }
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            var resConId = _contract.GetAsync("contratos").Result;
+
+            if (resConId.IsSuccessStatusCode)
+            {
+                var responseId = resConId.Content.ReadAsStringAsync().Result;
+                return responseId.ToString();
+            }
+            else
+            {
+                MessageBox.Show(resConId.StatusCode.ToString());
+            }
+
+        }
+        catch (Exception ex)
+        {
+            return ex.ToString();
+
+        }
+
+
+        return "";
+    }
 }

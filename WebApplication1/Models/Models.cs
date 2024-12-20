@@ -12,3 +12,8 @@ public class ApiKey
 {
     public string api_key { get; set; }
 }
+
+public class Idcontract
+{
+    public string idContrac { get; set; }
+}

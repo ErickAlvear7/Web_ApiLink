@@ -2,7 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Data;
+using System.Linq;
 using System.Web.UI;
+using System.Windows;
 
 namespace WebApplication1.WebForms
 {
@@ -36,12 +38,14 @@ namespace WebApplication1.WebForms
             string response = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", "login", _apikey);
 
             var jsonParse = JToken.Parse(response);
-
             var resToken = jsonParse.Value<JToken>("token").ToString();
 
+            //ViewState["Token"] = resToken;
 
-            ViewState["Token"] = resToken;
-            //MessageBox.Show(resToken);
+            string resId = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", resToken);
+
+            string id = (string)JArray.Parse(resId).Children()["id"].First();
+
 
         }
     }
