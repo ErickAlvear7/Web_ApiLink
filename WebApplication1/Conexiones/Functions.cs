@@ -89,4 +89,35 @@ public class Functions
 
         return "";
     }
+
+    public string PostCreatePatient(string url,string dataPatient, string auth)
+    {
+
+        HttpClient _patient = new HttpClient();
+        {
+            _patient.BaseAddress = new Uri(url);
+            _patient.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            HttpContent _content = new StringContent(dataPatient, Encoding.UTF8, "application/json");
+            var _resPatient = _patient.PostAsync("patient", _content).Result;
+
+            if (_resPatient.IsSuccessStatusCode)
+            {
+                var responseContent = _resPatient.Content.ReadAsStringAsync().Result;
+
+                return responseContent.ToString();
+            }
+            else
+            {
+                MessageBox.Show(_resPatient.StatusCode.ToString());
+
+
+            }
+
+
+        }
+        return "";
+    }
 }
