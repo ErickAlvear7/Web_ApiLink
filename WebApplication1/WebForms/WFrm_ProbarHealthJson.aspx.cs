@@ -31,21 +31,21 @@ namespace WebApplication1.WebForms
                 api = new Conexiones.Conexion(2, "").funConsultarSqls("sp_ConsultaDatos", objparam);
                 dtApi = api.Tables[0].Rows[0][0].ToString();
 
-
                 ApiKey apikey = new ApiKey
                 {
                     api_key = dtApi
                 };
 
+                //GET TOKEN
                 string _apikey = JsonConvert.SerializeObject(apikey);
-                string response = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", "login", _apikey);
-                var jsonParse = JToken.Parse(response);
-                var resToken = jsonParse.Value<JToken>("token").ToString();
-                string resId = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", resToken);
-                string idContract = (string)JArray.Parse(resId).Children()["id"].First();
-
-                //ViewState["Token"] = resToken;
-
+                string _token = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", "login", _apikey);
+                //GET ID CONTRACT
+                string _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
+                //GET ID SERVICIOS
+                string _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
+                //GET ID ESPECIALIDAD
+                string _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token);
+                //CREAR PACIENTE Y OBTENER ID PATIENT
                 var newPatient = new PostDataPatient
                 {
                     name = "Erick",
@@ -56,7 +56,7 @@ namespace WebApplication1.WebForms
                     phone = "",
                     role = 0,
                     oneclick = true,
-                    contractId = idContract,
+                    contractId = _idcont,
                     customId = "",
                     cp = 0,
                     city = "Quito",
@@ -64,11 +64,8 @@ namespace WebApplication1.WebForms
                 };
 
                 var json = new JavaScriptSerializer().Serialize(newPatient);
-
-                string resPatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", json, resToken);
-
-                string idpatient = (string)JArray.Parse(resId).Children()["id"].First();
-
+                string _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", json, _token);
+                MessageBox.Show("Patient Id:" + _idpatient);
 
             }
             catch (Exception ex)

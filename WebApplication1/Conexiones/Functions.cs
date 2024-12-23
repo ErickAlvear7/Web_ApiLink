@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -18,8 +19,6 @@ public class Functions
             HttpClient _client = new HttpClient();
             {
                 _client.BaseAddress = new Uri(url);
-                //_client.DefaultRequestHeaders.Add("ContentType", "application/json");
-                //_client.DefaultRequestHeaders.Add("Authorization", "Basic OTU4OTMzMjA1Om9NYkVhcFA5MGwzN21nalU=");
             }
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -30,8 +29,9 @@ public class Functions
             if (_response.IsSuccessStatusCode)
             {
                 var responseContent = _response.Content.ReadAsStringAsync().Result;
-               
-                return responseContent.ToString();
+                dynamic token = JObject.Parse(responseContent);
+
+                return token.token;
             }
             else
             {
@@ -39,10 +39,6 @@ public class Functions
 
                 
             }
-            //_response.Wait();
-            //HttpResponseMessage _respuesta = _response.Result;
-            //var _responseJason = _respuesta.Content.ReadAsStreamAsync();
-            //dynamic token = JObject.Parse(); 
             
         }
         catch(Exception ex){
@@ -72,7 +68,9 @@ public class Functions
             if (resConId.IsSuccessStatusCode)
             {
                 var responseId = resConId.Content.ReadAsStringAsync().Result;
-                return responseId.ToString();
+                dynamic idcont = JArray.Parse(responseId);
+                string idespe = idcont[0].id;
+                return idespe;
             }
             else
             {
@@ -88,6 +86,61 @@ public class Functions
 
 
         return "";
+    }
+
+    public string GetServicios(string url, string idcont,string auth)
+    {
+        HttpClient _servicio = new HttpClient();
+        {
+            _servicio.BaseAddress = new Uri(url);
+            _servicio.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
+        }
+
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+        var resServId = _servicio.GetAsync("services/" + idcont).Result;
+
+        if (resServId.IsSuccessStatusCode)
+        {
+            var serviceId = resServId.Content.ReadAsStringAsync().Result;
+
+            dynamic dataSer = JArray.Parse(serviceId);
+            string ideser = dataSer[0].id;
+            return ideser;
+        }
+        else
+        {
+            MessageBox.Show(resServId.StatusCode.ToString());
+        }
+
+        return "";
+    }
+
+    public string GetEspecialidad(string url,string auth)
+    {
+        HttpClient _espec = new HttpClient();
+        {
+            _espec.BaseAddress = new Uri(url);
+            _espec.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
+        }
+
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        var resEspeId = _espec.GetAsync("specialties").Result;
+
+        if (resEspeId.IsSuccessStatusCode)
+        {
+            var espeId = resEspeId.Content.ReadAsStringAsync().Result;
+
+            dynamic dataEsp = JArray.Parse(espeId);
+            string idespe = dataEsp[7].id;
+            return idespe;
+        }
+        else
+        {
+            MessageBox.Show(resEspeId.StatusCode.ToString());
+        }
+
+            return "";
     }
 
     public string PostCreatePatient(string url,string dataPatient, string auth)
@@ -106,8 +159,10 @@ public class Functions
             if (_resPatient.IsSuccessStatusCode)
             {
                 var responseContent = _resPatient.Content.ReadAsStringAsync().Result;
+                dynamic idpat = JObject.Parse(responseContent);
+                return idpat.patient.id;
 
-                return responseContent.ToString();
+                //return responseContent.ToString();
             }
             else
             {
