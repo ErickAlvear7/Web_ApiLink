@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Data;
-using System.Linq;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Windows;
@@ -38,7 +36,7 @@ namespace WebApplication1.WebForms
 
                 //GET TOKEN
                 string _apikey = JsonConvert.SerializeObject(apikey);
-                string _token = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", "login", _apikey);
+                string _token = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", _apikey);
                 //GET ID CONTRACT
                 string _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
                 //GET ID SERVICIOS
@@ -63,9 +61,8 @@ namespace WebApplication1.WebForms
                     TyC_aceptados = false
                 };
 
-                var json = new JavaScriptSerializer().Serialize(newPatient);
-                string _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", json, _token);
-                MessageBox.Show("Patient Id:" + _idpatient);
+                var data = new JavaScriptSerializer().Serialize(newPatient);
+                string _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
 
             }
             catch (Exception ex)

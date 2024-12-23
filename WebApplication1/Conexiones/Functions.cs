@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -9,13 +8,12 @@ using System.Windows;
 public class Functions
 {
 
-    public string GetToken(string url, string metodo, string _json)
+    public string GetToken(string url,string _apikey)
     {
 
         try
         {
 
-            string _urlmetodo = url + metodo;
             HttpClient _client = new HttpClient();
             {
                 _client.BaseAddress = new Uri(url);
@@ -23,7 +21,7 @@ public class Functions
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            HttpContent _content = new StringContent(_json, Encoding.UTF8, "application/json");
+            HttpContent _content = new StringContent(_apikey, Encoding.UTF8, "application/json");
             var _response = _client.PostAsync("login", _content).Result;
 
             if (_response.IsSuccessStatusCode)
@@ -161,17 +159,27 @@ public class Functions
                 var responseContent = _resPatient.Content.ReadAsStringAsync().Result;
                 dynamic idpat = JObject.Parse(responseContent);
                 return idpat.patient.id;
-
-                //return responseContent.ToString();
             }
             else
             {
                 MessageBox.Show(_resPatient.StatusCode.ToString());
 
-
             }
 
+        }
+        return "";
+    }
 
+    public string Consultas(string url, string auth)
+    {
+        HttpClient _consulta = new HttpClient();
+        {
+            _consulta.BaseAddress = new Uri(url);
+            _consulta.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            //var content = new HttpFormUrlEncodedContent
         }
         return "";
     }
