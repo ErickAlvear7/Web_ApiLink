@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Web.Script.Serialization;
 using System.Web.UI;
+using System.Windows;
 
 namespace WebApplication1.WebForms
 {
@@ -10,8 +11,10 @@ namespace WebApplication1.WebForms
     {
 
         Object[] objparam = new Object[3];
+        Object[] objlinkid = new Object[3];
         DataSet api = new DataSet();
-        string dtApi;
+        DataSet link = new DataSet();
+        string dtApi,dtlink;
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -19,6 +22,14 @@ namespace WebApplication1.WebForms
 
         protected void btnEnviar_Click(object sender, EventArgs e)
         {
+
+            int codTitu = 212123;
+            int codBene = 0;
+            int codPro = 225;
+            string _idcont = "";
+            string _idserv = "";
+            string _idespe = "";
+            string _idpatient = "";
             try
             {
                 Array.Resize(ref objparam, 3);
@@ -36,12 +47,31 @@ namespace WebApplication1.WebForms
                 //GET TOKEN
                 string _apikey = JsonConvert.SerializeObject(apikey);
                 string _token = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", _apikey);
+
+                Array.Resize(ref objlinkid, 7);
+                objlinkid[0] = 0;
+                objlinkid[1] = codTitu;
+                objlinkid[2] = codBene;
+                objlinkid[3] = 0;
+                objlinkid[4] = "";
+                objlinkid[5] = "";
+                objlinkid[6] = "";
+                link = new Conexiones.Conexion(2, "").funConsultarSqls("sp_GrabarIdLink", objlinkid);
+                //dtlink = link.Tables[0].Rows[0][0].ToString();
+
+                foreach (DataRow dr in  link.Tables[0].Rows)
+                {
+
+                }
+
+              
+
                 //GET ID CONTRACT
-                string _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
+                 _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
                 //GET ID SERVICIOS
-                string _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
+                 _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
                 //GET ID ESPECIALIDAD
-                string _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token, _idcont);
+                _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token, _idcont);
                 //CREAR PACIENTE Y OBTENER ID PATIENT
                 var newPatient = new PostDataPatient
                 {
@@ -50,19 +80,17 @@ namespace WebApplication1.WebForms
                     email = "erick.alvear7@gmail.com",
                     birthdate = "1982-08-15",
                     gender = "h",
-                    phone = "",
-                    role = 0,
-                    oneclick = true,
+                    phone = "022630922",
                     contractId = _idcont,
-                    customId = "",
-                    cp = 0,
-                    city = "Quito",
-                    TyC_aceptados = false
                 };
 
                 var data = new JavaScriptSerializer().Serialize(newPatient);
-                string _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
+                _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
 
+                //GUARDAR EN LA BDDD ID GENERADOS
+
+
+              
                 //GENERAR POST CONSULTA LINK
 
                 var newConsulta = new PostConsulta
@@ -71,15 +99,10 @@ namespace WebApplication1.WebForms
                     idContrato = _idcont,
                     idEspecialidad = _idespe,
                     idServicio = _idserv,
-                    date = "2024-12-27",
-                    hour = "18:50",
-                    timeZone = "",
                     reason = "dolor de cabeza",
-                    idMedico = "",
-                    customId = "",
-                    oneclick = true
-
                 };
+
+
 
             }
             catch (Exception ex)
