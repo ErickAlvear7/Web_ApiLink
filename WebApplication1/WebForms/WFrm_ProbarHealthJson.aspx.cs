@@ -3,7 +3,6 @@ using System;
 using System.Data;
 using System.Web.Script.Serialization;
 using System.Web.UI;
-using System.Windows;
 
 namespace WebApplication1.WebForms
 {
@@ -42,7 +41,7 @@ namespace WebApplication1.WebForms
                 //GET ID SERVICIOS
                 string _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
                 //GET ID ESPECIALIDAD
-                string _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token);
+                string _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token, _idcont);
                 //CREAR PACIENTE Y OBTENER ID PATIENT
                 var newPatient = new PostDataPatient
                 {
@@ -63,6 +62,24 @@ namespace WebApplication1.WebForms
 
                 var data = new JavaScriptSerializer().Serialize(newPatient);
                 string _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
+
+                //GENERAR POST CONSULTA LINK
+
+                var newConsulta = new PostConsulta
+                {
+                    idPatient = _idpatient,
+                    idContrato = _idcont,
+                    idEspecialidad = _idespe,
+                    idServicio = _idserv,
+                    date = "2024-12-27",
+                    hour = "18:50",
+                    timeZone = "",
+                    reason = "dolor de cabeza",
+                    idMedico = "",
+                    customId = "",
+                    oneclick = true
+
+                };
 
             }
             catch (Exception ex)

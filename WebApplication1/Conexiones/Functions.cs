@@ -114,7 +114,7 @@ public class Functions
         return "";
     }
 
-    public string GetEspecialidad(string url,string auth)
+    public string GetEspecialidad(string url,string auth,string idcont)
     {
         HttpClient _espec = new HttpClient();
         {
@@ -123,14 +123,14 @@ public class Functions
         }
 
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        var resEspeId = _espec.GetAsync("specialties").Result;
+        var resEspeId = _espec.GetAsync("specialties/" + idcont).Result;
 
         if (resEspeId.IsSuccessStatusCode)
         {
             var espeId = resEspeId.Content.ReadAsStringAsync().Result;
 
             dynamic dataEsp = JArray.Parse(espeId);
-            string idespe = dataEsp[7].id;
+            string idespe = dataEsp[0].id;
             return idespe;
         }
         else
@@ -170,7 +170,7 @@ public class Functions
         return "";
     }
 
-    public string Consultas(string url, string auth)
+    public string Consultas(string url, string auth, bool parametros)
     {
         HttpClient _consulta = new HttpClient();
         {

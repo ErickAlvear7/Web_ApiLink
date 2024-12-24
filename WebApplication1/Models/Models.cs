@@ -37,7 +37,7 @@ public class PostDataPatient
 
 }
 
-public class Consultar
+public class PostConsulta
 {
     public string idPatient { get; set; }
     public string idContrato { get; set; }
@@ -52,3 +52,4 @@ public class Consultar
     public bool oneclick { get; set; }
 
 }
+
