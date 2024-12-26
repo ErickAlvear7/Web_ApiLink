@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Data;
 using System.Web.Script.Serialization;
@@ -14,7 +15,7 @@ namespace WebApplication1.WebForms
         Object[] objlinkid = new Object[3];
         DataSet api = new DataSet();
         DataSet link = new DataSet();
-        string dtApi,dtlink;
+        string dtApi;
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -23,13 +24,14 @@ namespace WebApplication1.WebForms
         protected void btnEnviar_Click(object sender, EventArgs e)
         {
 
-            int codTitu = 212123;
+            int codTitu = 88888;
             int codBene = 0;
-            int codPro = 225;
+            int codPro = 227;
             string _idcont = "";
             string _idserv = "";
             string _idespe = "";
             string _idpatient = "";
+            string _datalink = "";
             try
             {
                 Array.Resize(ref objparam, 3);
@@ -77,10 +79,10 @@ namespace WebApplication1.WebForms
                     {
                         name = "Erick",
                         surnames = "Alvear",
-                        email = "erick.alvear7@gmail.com",
+                        email = "ealvear@prestasalud.com",
                         birthdate = "1982-08-15",
-                        gender = "h",
-                        phone = "022630922",
+                        gender = "m",
+                        phone = "0962655679",
                         contractId = _idcont,
                     };
 
@@ -120,6 +122,21 @@ namespace WebApplication1.WebForms
                     idServicio = _idserv,
                     reason = "dolor de cabeza",
                 };
+
+                var dataconsulta = new JavaScriptSerializer().Serialize(newConsulta);
+                _datalink = new Functions().Consultas("https://api.eh.ehealthcenter.io/", dataconsulta, _token);
+                dynamic urlLink = JObject.Parse(_datalink);
+                //string doc = urlLink.doctor.nombre;
+                string url = urlLink.url_llamada;
+                string fecha = urlLink.fecha;
+                string motivo = urlLink.motivo;
+
+                //MessageBox.Show(url);
+                MessageBox.Show(fecha);
+                //MessageBox.Show(motivo);
+
+
+
 
             }
             catch (Exception ex)

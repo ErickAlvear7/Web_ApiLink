@@ -33,8 +33,8 @@ public class Functions
             }
             else
             {
+              
                 MessageBox.Show(_response.StatusCode.ToString());
-
                 
             }
             
@@ -170,17 +170,40 @@ public class Functions
         return "";
     }
 
-    public string Consultas(string url, string auth)
+    public string Consultas(string url,string datacon, string auth)
     {
-        HttpClient _consulta = new HttpClient();
+        try
         {
-            _consulta.BaseAddress = new Uri(url);
-            _consulta.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
+            HttpClient _consulta = new HttpClient();
+            {
+                _consulta.BaseAddress = new Uri(url);
+                _consulta.DefaultRequestHeaders.Add("Authorization", "Bearer " + auth);
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
+                HttpContent _content = new StringContent(datacon, Encoding.UTF8, "application/json");
+                var _resConsulta = _consulta.PostAsync("consulta", _content).Result;
+
+                if (_resConsulta.IsSuccessStatusCode)
+                {
+                    var responseContent = _resConsulta.Content.ReadAsStringAsync().Result;
+                    return responseContent.ToString();
+                }
+                else
+                {
+                    //MessageBox.Show(_resConsulta.StatusCode.ToString());
+                    MessageBox.Show("Horario no disponible");
+                }
+
+            }
+
+        }
+        catch(Exception ex)
+        {
             
         }
+     
+ 
         return "";
     }
 }
