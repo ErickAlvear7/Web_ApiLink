@@ -48,48 +48,68 @@ namespace WebApplication1.WebForms
                 string _apikey = JsonConvert.SerializeObject(apikey);
                 string _token = new Functions().GetToken("https://api.eh.ehealthcenter.io/apikey/", _apikey);
 
-                Array.Resize(ref objlinkid, 7);
-                objlinkid[0] = 0;
-                objlinkid[1] = codTitu;
-                objlinkid[2] = codBene;
-                objlinkid[3] = 0;
-                objlinkid[4] = "";
-                objlinkid[5] = "";
-                objlinkid[6] = "";
-                link = new Conexiones.Conexion(2, "").funConsultarSqls("sp_GrabarIdLink", objlinkid);
-                //dtlink = link.Tables[0].Rows[0][0].ToString();
-
-                foreach (DataRow dr in  link.Tables[0].Rows)
+                Array.Resize(ref objparam, 3);
+                objparam[0] = codTitu;
+                objparam[1] = "";
+                objparam[2] = 183;
+                link = new Conexiones.Conexion(2, "").funConsultarSqls("sp_ConsultaDatos", objparam);
+                if(link != null && link.Tables[0].Rows.Count>0)
                 {
-
+                    foreach (DataRow dr in link.Tables[0].Rows)
+                    {
+                        _idpatient = dr[0].ToString();
+                        _idcont = dr[1].ToString();
+                        _idespe = dr[2].ToString();
+                        _idserv = dr[3].ToString();
+                    }
                 }
-
-          
-                //GET ID CONTRACT
-                 _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
-                //GET ID SERVICIOS
-                 _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
-                //GET ID ESPECIALIDAD
-                _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token, _idcont);
-                //CREAR PACIENTE Y OBTENER ID PATIENT
-                var newPatient = new PostDataPatient
+                else
                 {
-                    name = "Erick",
-                    surnames = "Alvear",
-                    email = "erick.alvear7@gmail.com",
-                    birthdate = "1982-08-15",
-                    gender = "h",
-                    phone = "022630922",
-                    contractId = _idcont,
-                };
+                    //GET ID CONTRACT
+                    _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
+                    //GET ID SERVICIOS
+                    _idserv = new Functions().GetServicios("https://api.eh.ehealthcenter.io/", _idcont, _token);
+                    //GET ID ESPECIALIDAD
+                    _idespe = new Functions().GetEspecialidad("https://api.eh.ehealthcenter.io/", _token, _idcont);
 
-                var data = new JavaScriptSerializer().Serialize(newPatient);
-                _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
+                    //CREAR PACIENTE Y OBTENER ID PATIENT
+                    var newPatient = new PostDataPatient
+                    {
+                        name = "Erick",
+                        surnames = "Alvear",
+                        email = "erick.alvear7@gmail.com",
+                        birthdate = "1982-08-15",
+                        gender = "h",
+                        phone = "022630922",
+                        contractId = _idcont,
+                    };
+
+                    var data = new JavaScriptSerializer().Serialize(newPatient);
+                    _idpatient = new Functions().PostCreatePatient("https://api.eh.ehealthcenter.io/", data, _token);
+
+                    Array.Resize(ref objlinkid, 8);
+                    objlinkid[0] = 0;
+                    objlinkid[1] = codTitu;
+                    objlinkid[2] = codBene;
+                    objlinkid[3] = codPro;
+                    objlinkid[4] = _idpatient;
+                    objlinkid[5] = _idcont;
+                    objlinkid[6] = _idespe;
+                    objlinkid[7] = _idserv;
+
+                    link = new Conexiones.Conexion(2, "").funConsultarSqls("sp_GrabarIdLink", objlinkid);
+
+                    foreach (DataRow dr in link.Tables[0].Rows)
+                    {
+                        _idpatient = dr[0].ToString();
+                        _idcont = dr[1].ToString();
+                        _idespe = dr[2].ToString();
+                        _idserv = dr[3].ToString();
+                    }
+                }
 
                 //GUARDAR EN LA BDDD ID GENERADOS
 
-
-              
                 //GENERAR POST CONSULTA LINK
 
                 var newConsulta = new PostConsulta
@@ -100,8 +120,6 @@ namespace WebApplication1.WebForms
                     idServicio = _idserv,
                     reason = "dolor de cabeza",
                 };
-
-
 
             }
             catch (Exception ex)
