@@ -170,7 +170,7 @@ public class Functions
         return "";
     }
 
-    public string Consultas(string url, string auth, bool parametros)
+    public string Consultas(string url, string auth,)
     {
         HttpClient _consulta = new HttpClient();
         {

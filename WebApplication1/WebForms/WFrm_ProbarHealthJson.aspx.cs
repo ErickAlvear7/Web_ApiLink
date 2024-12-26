@@ -64,8 +64,7 @@ namespace WebApplication1.WebForms
 
                 }
 
-              
-
+          
                 //GET ID CONTRACT
                  _idcont = new Functions().GetIdContract("https://api.eh.ehealthcenter.io/", _token);
                 //GET ID SERVICIOS
